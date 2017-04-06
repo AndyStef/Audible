@@ -42,6 +42,7 @@ class MainViewController: UIViewController {
         button.setTitle("Skip", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(UIColor(colorLiteralRed: 247/255, green: 154/255, blue: 27/255, alpha: 1.0), for: .normal)
+        button.addTarget(self, action: #selector(skipAllPages), for: .touchUpInside)
         
         return button
     }()
@@ -50,6 +51,7 @@ class MainViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("Next", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(nextPage), for: .touchUpInside)
         button.setTitleColor(UIColor(colorLiteralRed: 247/255, green: 154/255, blue: 27/255, alpha: 1.0), for: .normal)
         
         return button
@@ -80,8 +82,37 @@ class MainViewController: UIViewController {
     //MARK: - VC lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         registerCells()
         configureCollectionView()
+        observeKeyboardNotification()
+    }
+    
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        collectionView.collectionViewLayout.invalidateLayout()
+        let indexPath = IndexPath(item: pageControl.currentPage, section: 0)
+        DispatchQueue.main.async {
+            self.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+            self.collectionView.reloadData()
+        } 
+    }
+    
+    private func observeKeyboardNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    }
+    
+    func keyboardShow() {
+        UIView.animate(withDuration: 0.5) {
+            let y: CGFloat = UIDevice.current.orientation.isLandscape ? -100 : -50
+            self.view.frame = CGRect(x: 0, y: y, width: self.view.frame.width, height: self.view.frame.height)
+        }
+    }
+    
+    func keyboardHide() {
+        UIView.animate(withDuration: 0.5) {
+            self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        }
     }
     
     //MARK: - UI things
@@ -120,7 +151,40 @@ class MainViewController: UIViewController {
     
     fileprivate func registerCells() {
         collectionView.register(PageCollectionViewCell.self, forCellWithReuseIdentifier: cellId)
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: loginCellId)
+        collectionView.register(LoginCollectionViewCell.self, forCellWithReuseIdentifier: loginCellId)
+    }
+}
+
+//MARK: - Actions
+extension MainViewController {
+    func hideControlsWithAnimations() {
+        pageControl.currentPage = pages.count
+        pageControlBottomAnchor?.constant = 40.0
+        skipButtonTopAnchor?.constant = -32.0
+        nextButtonTopAnchor?.constant = -32.0
+        UIView.animate(withDuration: 0.3, animations: {
+            self.view.layoutIfNeeded()
+        })
+    }
+    
+    func skipAllPages() {
+        let indexPath = IndexPath(item: pages.count, section: 0)
+        collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        hideControlsWithAnimations()
+    }
+    
+    func nextPage() {
+        if pageControl.currentPage == pages.count {
+            return
+        }
+        
+        if pageControl.currentPage == pages.count - 1 {
+            hideControlsWithAnimations()
+        }
+        
+        let indexPath = IndexPath(item: pageControl.currentPage + 1, section: 0)
+        collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        pageControl.currentPage += 1
     }
 }
 
@@ -133,7 +197,6 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.item == pages.count {
             let loginCell = collectionView.dequeueReusableCell(withReuseIdentifier: loginCellId, for: indexPath)
-            loginCell.backgroundColor = .green
             
             return loginCell
         }
@@ -148,6 +211,10 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width, height: view.frame.height)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        view.endEditing(true)
     }
     
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
