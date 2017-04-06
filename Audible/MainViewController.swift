@@ -80,8 +80,27 @@ class MainViewController: UIViewController {
     //MARK: - VC lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         registerCells()
         configureCollectionView()
+        observeKeyboardNotification()
+    }
+    
+    private func observeKeyboardNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    }
+    
+    func keyboardShow() {
+        UIView.animate(withDuration: 0.5) { 
+            self.view.frame = CGRect(x: 0, y: -50, width: self.view.frame.width, height: self.view.frame.height)
+        }
+    }
+    
+    func keyboardHide() {
+        UIView.animate(withDuration: 0.5) {
+            self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        }
     }
     
     //MARK: - UI things
@@ -120,7 +139,7 @@ class MainViewController: UIViewController {
     
     fileprivate func registerCells() {
         collectionView.register(PageCollectionViewCell.self, forCellWithReuseIdentifier: cellId)
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: loginCellId)
+        collectionView.register(LoginCollectionViewCell.self, forCellWithReuseIdentifier: loginCellId)
     }
 }
 
@@ -133,7 +152,6 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.item == pages.count {
             let loginCell = collectionView.dequeueReusableCell(withReuseIdentifier: loginCellId, for: indexPath)
-            loginCell.backgroundColor = .green
             
             return loginCell
         }
@@ -148,6 +166,10 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width, height: view.frame.height)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        view.endEditing(true)
     }
     
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
