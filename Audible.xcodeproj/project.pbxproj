@@ -16,6 +16,7 @@
 		8FED04E11E966783005B71B3 /* Page.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FED04E01E966783005B71B3 /* Page.swift */; };
 		8FED04E31E96869A005B71B3 /* LoginCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FED04E21E96869A005B71B3 /* LoginCollectionViewCell.swift */; };
 		8FED04E51E968D8B005B71B3 /* LeftPaddedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FED04E41E968D8B005B71B3 /* LeftPaddedTextField.swift */; };
+		8FED04E71E969A6E005B71B3 /* LoggedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FED04E61E969A6E005B71B3 /* LoggedViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		8FED04E01E966783005B71B3 /* Page.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Page.swift; sourceTree = "<group>"; };
 		8FED04E21E96869A005B71B3 /* LoginCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginCollectionViewCell.swift; sourceTree = "<group>"; };
 		8FED04E41E968D8B005B71B3 /* LeftPaddedTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeftPaddedTextField.swift; sourceTree = "<group>"; };
+		8FED04E61E969A6E005B71B3 /* LoggedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoggedViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 			isa = PBXGroup;
 			children = (
 				8FED04CA1E9659B2005B71B3 /* MainViewController.swift */,
+				8FED04E61E969A6E005B71B3 /* LoggedViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -187,6 +190,7 @@
 				8FED04C91E9659B2005B71B3 /* AppDelegate.swift in Sources */,
 				8FED04E11E966783005B71B3 /* Page.swift in Sources */,
 				8FED04DF1E96623E005B71B3 /* PageCollectionViewCell.swift in Sources */,
+				8FED04E71E969A6E005B71B3 /* LoggedViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
