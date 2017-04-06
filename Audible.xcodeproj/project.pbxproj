@@ -55,13 +55,45 @@
 			isa = PBXGroup;
 			children = (
 				8FED04C81E9659B2005B71B3 /* AppDelegate.swift */,
-				8FED04CA1E9659B2005B71B3 /* ViewController.swift */,
-				8FED04CC1E9659B2005B71B3 /* Main.storyboard */,
+				8FED04DD1E9659EA005B71B3 /* Model */,
+				8FED04DC1E9659E0005B71B3 /* Controller */,
+				8FED04DB1E9659D7005B71B3 /* View */,
+				8FED04DA1E9659C9005B71B3 /* Supporting files */,
+			);
+			path = Audible;
+			sourceTree = "<group>";
+		};
+		8FED04DA1E9659C9005B71B3 /* Supporting files */ = {
+			isa = PBXGroup;
+			children = (
 				8FED04CF1E9659B2005B71B3 /* Assets.xcassets */,
 				8FED04D11E9659B2005B71B3 /* LaunchScreen.storyboard */,
 				8FED04D41E9659B2005B71B3 /* Info.plist */,
 			);
-			path = Audible;
+			name = "Supporting files";
+			sourceTree = "<group>";
+		};
+		8FED04DB1E9659D7005B71B3 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				8FED04CC1E9659B2005B71B3 /* Main.storyboard */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		8FED04DC1E9659E0005B71B3 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				8FED04CA1E9659B2005B71B3 /* ViewController.swift */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		8FED04DD1E9659EA005B71B3 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
