@@ -27,11 +27,11 @@ class MainViewController: UIViewController {
         return collectionView
     }()
     
-    private let pageControl: UIPageControl = {
+    fileprivate lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         pageControl.pageIndicatorTintColor = .lightGray
-        pageControl.numberOfPages = 3
+        pageControl.numberOfPages = self.pages.count + 1
         pageControl.currentPageIndicatorTintColor = UIColor(colorLiteralRed: 247/255, green: 154/255, blue: 27/255, alpha: 1.0)
         
         return pageControl
@@ -55,8 +55,14 @@ class MainViewController: UIViewController {
         return button
     }()
     
+    //MARK: - Constraints 
+    fileprivate var pageControlBottomAnchor: NSLayoutConstraint?
+    fileprivate var skipButtonTopAnchor: NSLayoutConstraint?
+    fileprivate var nextButtonTopAnchor: NSLayoutConstraint?
+    
     //MARK: - there is always better place and name for this
     fileprivate let cellId = "CellId"
+    fileprivate let loginCellId = "LoginCellId"
     fileprivate let pages: [Page] = {
         let firstPage = Page(imageName: "page1",
                              title: "Share a great listen",
@@ -74,20 +80,21 @@ class MainViewController: UIViewController {
     //MARK: - VC lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        registerCells()
         configureCollectionView()
     }
     
     //MARK: - UI things
     private func configureCollectionView() {
-        collectionView.register(PageCollectionViewCell.self, forCellWithReuseIdentifier: cellId)
         view.addSubview(collectionView)
         view.addSubview(pageControl)
         view.addSubview(skipButton)
         view.addSubview(nextButton)
         
         //page control anchors
+        pageControlBottomAnchor = pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         NSLayoutConstraint.activate(
-            [pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            [pageControlBottomAnchor!,
              pageControl.leftAnchor.constraint(equalTo: view.leftAnchor),
              pageControl.rightAnchor.constraint(equalTo: view.rightAnchor),
              pageControl.heightAnchor.constraint(equalToConstant: 30.0)])
@@ -95,26 +102,42 @@ class MainViewController: UIViewController {
         NSLayoutConstraint.activate(
             [collectionView.topAnchor.constraint(equalTo: view.topAnchor), collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor), collectionView.leftAnchor.constraint(equalTo: view.leftAnchor),collectionView.rightAnchor.constraint(equalTo: view.rightAnchor)])
         //buttons anchors
+        skipButtonTopAnchor = skipButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 16.0)
+        nextButtonTopAnchor = nextButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 16.0)
+        
+        //FIXME: - remove force unwraps
         NSLayoutConstraint.activate(
-            [skipButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 16.0),
+            [skipButtonTopAnchor!,
              skipButton.leftAnchor.constraint(equalTo: view.leftAnchor),
              skipButton.widthAnchor.constraint(equalToConstant: 60.0),
              skipButton.heightAnchor.constraint(equalToConstant: 50.0)])
         NSLayoutConstraint.activate(
-            [nextButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 16.0),
+            [nextButtonTopAnchor!,
              nextButton.rightAnchor.constraint(equalTo: view.rightAnchor),
              nextButton.widthAnchor.constraint(equalToConstant: 60.0),
              nextButton.heightAnchor.constraint(equalToConstant: 50.0)])
+    }
+    
+    fileprivate func registerCells() {
+        collectionView.register(PageCollectionViewCell.self, forCellWithReuseIdentifier: cellId)
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: loginCellId)
     }
 }
 
 //MARK: - CollectionView stuff
 extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return pages.count
+        return pages.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if indexPath.item == pages.count {
+            let loginCell = collectionView.dequeueReusableCell(withReuseIdentifier: loginCellId, for: indexPath)
+            loginCell.backgroundColor = .green
+            
+            return loginCell
+        }
+        
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? PageCollectionViewCell else {
             return UICollectionViewCell()
         }
@@ -125,5 +148,25 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width, height: view.frame.height)
+    }
+    
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        let pageNumber = Int(targetContentOffset.pointee.x / view.frame.width)
+        pageControl.currentPage = pageNumber
+        
+        //animating things out
+        if pageNumber == pages.count {
+            pageControlBottomAnchor?.constant = 40.0
+            skipButtonTopAnchor?.constant = -32.0
+            nextButtonTopAnchor?.constant = -32.0
+        } else {
+            pageControlBottomAnchor?.constant = 0.0
+            skipButtonTopAnchor?.constant = 16.0
+            nextButtonTopAnchor?.constant = 16.0
+        }
+    
+        UIView.animate(withDuration: 0.3, animations: {
+            self.view.layoutIfNeeded()
+        })
     }
 }
