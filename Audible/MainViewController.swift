@@ -42,6 +42,7 @@ class MainViewController: UIViewController {
         button.setTitle("Skip", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(UIColor(colorLiteralRed: 247/255, green: 154/255, blue: 27/255, alpha: 1.0), for: .normal)
+        button.addTarget(self, action: #selector(skipAllPages), for: .touchUpInside)
         
         return button
     }()
@@ -50,6 +51,7 @@ class MainViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("Next", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(nextPage), for: .touchUpInside)
         button.setTitleColor(UIColor(colorLiteralRed: 247/255, green: 154/255, blue: 27/255, alpha: 1.0), for: .normal)
         
         return button
@@ -140,6 +142,39 @@ class MainViewController: UIViewController {
     fileprivate func registerCells() {
         collectionView.register(PageCollectionViewCell.self, forCellWithReuseIdentifier: cellId)
         collectionView.register(LoginCollectionViewCell.self, forCellWithReuseIdentifier: loginCellId)
+    }
+}
+
+//MARK: - Actions
+extension MainViewController {
+    func hideControlsWithAnimations() {
+        pageControl.currentPage = pages.count
+        pageControlBottomAnchor?.constant = 40.0
+        skipButtonTopAnchor?.constant = -32.0
+        nextButtonTopAnchor?.constant = -32.0
+        UIView.animate(withDuration: 0.3, animations: {
+            self.view.layoutIfNeeded()
+        })
+    }
+    
+    func skipAllPages() {
+        let indexPath = IndexPath(item: pages.count, section: 0)
+        collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        hideControlsWithAnimations()
+    }
+    
+    func nextPage() {
+        if pageControl.currentPage == pages.count {
+            return
+        }
+        
+        if pageControl.currentPage == pages.count - 1 {
+            hideControlsWithAnimations()
+        }
+        
+        let indexPath = IndexPath(item: pageControl.currentPage + 1, section: 0)
+        collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        pageControl.currentPage += 1
     }
 }
 
