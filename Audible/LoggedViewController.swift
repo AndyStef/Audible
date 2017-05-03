@@ -35,6 +35,7 @@ class LoggedViewController: UINavigationController {
 class HomeController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.title = "We're logged in"
         view.backgroundColor = .yellow
     }
 }
